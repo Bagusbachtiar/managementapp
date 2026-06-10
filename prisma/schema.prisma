@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String    @id @default(cuid())
+  name             String
+  email            String    @unique
+  password         String
+  emailVerifiedAt  DateTime?
+  profilePhotoPath String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  roles            ModelHasRole[]
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  guardName   String   @default("web")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       ModelHasRole[]
+  permissions RoleHasPermission[]
+}
+
+model Permission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  guardName String   @default("web")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roles     RoleHasPermission[]
+
+  @@unique([name, guardName])
+}
+
+model ModelHasRole {
+  roleId    Int
+  modelType String @default("User")
+  modelId   String
+  role      Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user      User   @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, modelId, modelType])
+}
+
+model RoleHasPermission {
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Sales {
+  id        Int      @id @default(autoincrement())
+  sales     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  produks   Produk[]
+  tagihans  Tagihan[]
+}
+
+model Produk {
+  id               Int                @id @default(autoincrement())
+  id_sales         Int
+  nama             String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  sales            Sales              @relation(fields: [id_sales], references: [id], onDelete: Cascade)
+  stoks            Stok[]
+  tagihans         Tagihan[]
+  historyPenjualan HistoryPenjualan[]
+}
+
+model Kategori {
+  id               Int                @id @default(autoincrement())
+  kategori         String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  stoks            Stok[]
+  historyPenjualan HistoryPenjualan[]
+}
+
+model Stok {
+  id               Int                @id @default(autoincrement())
+  produk_id        Int
+  kategori_id      Int
+  nama_tipe        String
+  jumlah           Int                @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  produk           Produk             @relation(fields: [produk_id], references: [id], onDelete: Cascade)
+  kategori         Kategori           @relation(fields: [kategori_id], references: [id])
+  historyPenjualan HistoryPenjualan[]
+}
+
+model Tagihan {
+  id          Int                 @id @default(autoincrement())
+  sales_id    Int
+  produk_id   Int
+  tagihan     String
+  notes       String?
+  image       String
+  tanggal     DateTime
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  sales       Sales               @relation(fields: [sales_id], references: [id])
+  produk      Produk              @relation(fields: [produk_id], references: [id])
+  pembayarans HistoriPembayaran[]
+}
+
+model HistoriPembayaran {
+  id         Int      @id @default(autoincrement())
+  tagihan_id Int
+  jumlah     Int
+  gambar     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  tagihan    Tagihan  @relation(fields: [tagihan_id], references: [id], onDelete: Cascade)
+}
+
+model HistoryPenjualan {
+  id                Int      @id @default(autoincrement())
+  stok_id           Int
+  produk_id         Int
+  kategori_id       Int
+  nama_tipe         String
+  jumlah_terjual    Int
+  stok_sebelum      Int
+  stok_sesudah      Int
+  tanggal_penjualan DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  stok              Stok     @relation(fields: [stok_id], references: [id])
+  produk            Produk   @relation(fields: [produk_id], references: [id])
+  kategori          Kategori @relation(fields: [kategori_id], references: [id])
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
