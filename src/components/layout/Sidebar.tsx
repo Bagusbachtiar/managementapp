@@ -59,7 +59,7 @@ function NavContent({ onClose }: { onClose?: () => void }) {
               href={href}
               onClick={onClose}
               className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-150 group relative",
+                "ripple-target flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-150 group relative",
                 active
                   ? "text-white"
                   : "text-white/50 hover:text-white/90"

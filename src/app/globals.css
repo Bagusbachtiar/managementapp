@@ -8,7 +8,7 @@
   to { transform: scale(4); opacity: 0; }
 }
 
-button {
+button, a.ripple-target {
   position: relative;
   overflow: hidden;
 }

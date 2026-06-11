@@ -6,15 +6,15 @@ export function RippleEffect() {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       const target = e.target as HTMLElement;
-      const button = target.closest("button");
-      if (!button || button.disabled) return;
+      const el = (target.closest("button:not([disabled])") || target.closest("a.ripple-target")) as HTMLElement | null;
+      if (!el) return;
 
-      const rect = button.getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
       const ripple = document.createElement("span");
       ripple.className = "ripple-effect";
       ripple.style.left = `${e.clientX - rect.left}px`;
       ripple.style.top = `${e.clientY - rect.top}px`;
-      button.appendChild(ripple);
+      el.appendChild(ripple);
       ripple.addEventListener("animationend", () => ripple.remove());
     }
 
