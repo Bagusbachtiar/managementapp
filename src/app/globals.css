@@ -4,6 +4,28 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0);
+  animation: ripple 0.5s linear;
+  pointer-events: none;
+  margin-left: -30px;
+  margin-top: -30px;
+}
+
 :root {
   --bg: #f1f5f9;
   --card: #ffffff;
