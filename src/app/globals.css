@@ -502,10 +502,21 @@ html.dark .card-header { border-bottom-color: var(--border); }
 
   /* Modals: bottom-sheet */
   .modal-overlay { align-items: flex-end; padding: 0; }
-  .modal-box { border-radius: 1.25rem 1.25rem 0 0; max-height: 92vh; }
-  .modal-header { padding: 1rem 1.1rem; }
-  .modal-body { padding: 1.1rem; }
-  .modal-footer { padding: 0.85rem 1.1rem; border-radius: 0; }
+  .modal-box {
+    border-radius: 1.25rem 1.25rem 0 0;
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header { padding: 1rem 1.1rem; flex-shrink: 0; }
+  .modal-body { padding: 1.1rem; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    padding: 0.85rem 1.1rem;
+    border-radius: 0;
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+  }
 
   /* Modal 2-col grid collapses */
   .modal-grid { grid-template-columns: 1fr; }
