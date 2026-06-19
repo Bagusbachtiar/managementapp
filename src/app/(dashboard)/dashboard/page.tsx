@@ -4,6 +4,7 @@ import { formatRupiah, formatDate } from "@/lib/utils";
 import { DashboardPesanModal } from "./DashboardPesanModal";
 import { DashboardBayarModal } from "./DashboardBayarModal";
 import { DashboardPenjualanModal } from "./DashboardPenjualanModal";
+import { TambahInventoriModal } from "@/app/(dashboard)/stok/TambahInventoriModal";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -19,6 +20,7 @@ export default async function DashboardPage() {
     allSales,
     unpaidTagihans,
     allProduks,
+    kategoris,
   ] = await Promise.all([
     prisma.produk.count(),
     prisma.stok.aggregate({ _sum: { jumlah: true } }),
@@ -53,6 +55,7 @@ export default async function DashboardPage() {
       include: { stoks: { include: { kategori: true } } },
       orderBy: { nama: "asc" },
     }),
+    prisma.kategori.findMany({ orderBy: { kategori: "asc" } }),
   ]);
 
   const stats = [
@@ -70,7 +73,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {stats.map((s) => (
           <div key={s.label} style={{
             background: s.bg, borderRadius: "var(--radius)", padding: "1.4rem 1.5rem",
@@ -82,8 +85,8 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Recent 3 cards */}
-      <div className="grid lg:grid-cols-3 gap-5">
+      {/* Recent cards + stok — 2x2 on desktop */}
+      <div className="grid lg:grid-cols-2 gap-5">
 
         {/* Recent Pesanan */}
         <div className="card overflow-hidden">
@@ -181,7 +184,55 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Stok Summary */}
+        <div className="card overflow-hidden">
+        <div className="card-header">
+          <span className="card-title">Ringkasan Stok</span>
+          <TambahInventoriModal
+            kategoris={kategoris}
+            produks={allProduks.map(p => ({
+              id: p.id,
+              nama: p.nama,
+              namaTipes: [...new Set(p.stoks.map(s => s.nama_tipe))].sort(),
+              stoks: p.stoks.map(s => ({ nama_tipe: s.nama_tipe, jumlah: s.jumlah })),
+            }))}
+          />
+        </div>
+        <div style={{ maxHeight: "22rem", overflowY: "auto" }}>
+          {allProduks.length === 0 && <div className="empty-state" style={{ padding: "2rem" }}>Belum ada produk</div>}
+          {allProduks.map((p, i) => {
+            const totalStok = p.stoks.reduce((sum, s) => sum + s.jumlah, 0);
+            return (
+              <div key={p.id} style={{
+                padding: "0.85rem 1.25rem",
+                borderBottom: i < allProduks.length - 1 ? "1px solid var(--border)" : "none",
+                display: "flex", alignItems: "flex-start", gap: "0.75rem",
+              }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text)", marginBottom: p.stoks.length ? "0.4rem" : 0 }}>
+                    {p.nama}
+                  </p>
+                  {p.stoks.length > 0 && (
+                    <div style={{ display: "flex", gap: "0.35rem", overflowX: "auto", paddingBottom: "0.2rem" }}>
+                      {p.stoks.map(s => (
+                        <span key={s.id} className="badge badge-indigo" style={{ fontSize: "0.72rem", flexShrink: 0 }}>
+                          {s.nama_tipe} · {s.jumlah}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <span className={`badge ${totalStok <= 0 ? "badge-red" : "badge-green"}`} style={{ fontWeight: 700, flexShrink: 0 }}>
+                  {totalStok}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        </div>
+
       </div>
+
     </div>
   );
 }

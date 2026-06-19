@@ -132,14 +132,15 @@ const addVariantsSchema = z.object({
 
 export async function addVariantsToInventori(raw: unknown) {
   const data = addVariantsSchema.parse(raw);
-  await prisma.stok.createMany({
-    data: data.variants.map((v) => ({
-      produk_id: data.produk_id,
-      nama_tipe: v.nama_tipe,
-      kategori_id: v.kategori_id,
-      jumlah: v.jumlah,
-    })),
-  });
+  await prisma.$transaction(
+    data.variants.map((v) =>
+      prisma.stok.upsert({
+        where: { produk_id_nama_tipe: { produk_id: data.produk_id, nama_tipe: v.nama_tipe } },
+        update: { jumlah: v.jumlah, kategori_id: v.kategori_id },
+        create: { produk_id: data.produk_id, nama_tipe: v.nama_tipe, kategori_id: v.kategori_id, jumlah: v.jumlah },
+      })
+    )
+  );
   revalidatePath("/stok");
   revalidatePath("/produk");
   return { success: true };

@@ -99,6 +99,8 @@ model Stok {
   produk           Produk             @relation(fields: [produk_id], references: [id], onDelete: Cascade)
   kategori         Kategori           @relation(fields: [kategori_id], references: [id])
   historyPenjualan HistoryPenjualan[]
+
+  @@unique([produk_id, nama_tipe])
 }
 
 model Tagihan {
