@@ -110,9 +110,6 @@ export function TambahInventoriModal({
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="form-label" style={{ margin: 0 }}>Variasi Produk</label>
-                    <button type="button" onClick={addVariant} className="btn btn-secondary btn-sm">
-                      <Plus size={14} /> Tambah Variasi
-                    </button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                     {variants.map((v, i) => (
@@ -120,22 +117,23 @@ export function TambahInventoriModal({
                           <div style={{ flex: 1 }}>
                             <label className="form-label">Nama Tipe</label>
                             {isExisting && activeNamaTipes.length > 0 ? (
-                              <div className="select-wrap">
-                                <select
+                              <>
+                                <input
+                                  list={`tipe-list-${i}`}
                                   value={v.nama_tipe}
                                   onChange={(e) => {
-                                    const newTipe = e.target.value;
-                                    const match = activeProduk?.stoks.find(s => s.nama_tipe === newTipe);
+                                    const val = e.target.value;
+                                    const match = activeProduk?.stoks.find(s => s.nama_tipe === val);
                                     setVariants(p => p.map((vv, idx) => idx === i
-                                      ? { ...vv, nama_tipe: newTipe, jumlah: match ? match.jumlah : vv.jumlah }
+                                      ? { ...vv, nama_tipe: val, jumlah: match ? match.jumlah : 0 }
                                       : vv
                                     ));
                                   }}
-                                  required className="form-input">
-                                  <option value="">— Pilih tipe —</option>
-                                  {activeNamaTipes.map(t => <option key={t} value={t}>{t}</option>)}
-                                </select>
-                              </div>
+                                  required className="form-input" placeholder="Pilih atau ketik tipe baru..." />
+                                <datalist id={`tipe-list-${i}`}>
+                                  {activeNamaTipes.map(t => <option key={t} value={t} />)}
+                                </datalist>
+                              </>
                             ) : (
                               <input
                                 value={v.nama_tipe}
@@ -165,10 +163,16 @@ export function TambahInventoriModal({
                               </button>
                             </div>
                           </div>
-                          <button type="button" onClick={() => removeVariant(i)} disabled={variants.length === 1}
-                            className="icon-btn icon-btn-red" style={{ alignSelf: "flex-end", width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
-                            <Minus size={14} />
-                          </button>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignSelf: "flex-end" }}>
+                            <button type="button" onClick={addVariant}
+                              className="icon-btn icon-btn-green" style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
+                              <Plus size={14} />
+                            </button>
+                            <button type="button" onClick={() => removeVariant(i)} disabled={variants.length === 1}
+                              className="icon-btn icon-btn-red" style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
+                              <Minus size={14} />
+                            </button>
+                          </div>
                         </div>
                     ))}
                   </div>

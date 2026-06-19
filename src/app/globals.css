@@ -203,6 +203,8 @@ body {
   .icon-btn-amber:hover  { background: #fef3c7; transform: scale(1.05); }
   .icon-btn-red    { background: #fef2f2; color: #dc2626; }
   .icon-btn-red:hover    { background: #fee2e2; transform: scale(1.05); }
+  .icon-btn-green  { background: #f0fdf4; color: #16a34a; }
+  .icon-btn-green:hover  { background: #dcfce7; transform: scale(1.05); }
   .icon-btn-teal   { background: #f0fdfa; color: #0d9488; }
   .icon-btn-teal:hover   { background: #ccfbf1; transform: scale(1.05); }
   .icon-btn-slate  { background: #f1f5f9; color: #475569; }
@@ -429,6 +431,8 @@ html.dark .icon-btn-indigo { background: #1e1b4b; color: #818cf8; }
 html.dark .icon-btn-indigo:hover { background: #312e81; }
 html.dark .icon-btn-red    { background: #1f1215; color: #f87171; }
 html.dark .icon-btn-red:hover { background: #2d1515; }
+html.dark .icon-btn-green  { background: #052e16; color: #4ade80; }
+html.dark .icon-btn-green:hover { background: #14532d; }
 html.dark .icon-btn-amber  { background: #1c1507; color: #fbbf24; }
 html.dark .icon-btn-amber:hover { background: #292007; }
 html.dark .icon-btn-teal   { background: #042f2e; color: #2dd4bf; }
