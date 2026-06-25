@@ -17,6 +17,7 @@ import {
   X,
   Sun,
   Moon,
+  CircleDollarSign,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { useState } from "react";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/produk", label: "Produk", icon: Package },
   { href: "/kategori", label: "Kategori", icon: Tags },
   { href: "/stok", label: "Stok", icon: BarChart2 },
+  { href: "/price", label: "Harga", icon: CircleDollarSign },
   { href: "/sales", label: "Sales", icon: Users },
   { href: "/tasks", label: "Tugas", icon: ClipboardList },
   { href: "/users", label: "Pengguna", icon: FileText },

@@ -62,6 +62,7 @@ export async function recordPenjualan(raw: unknown) {
         kategori_id: stok.kategori_id,
         nama_tipe: stok.nama_tipe,
         jumlah_terjual: data.jumlah_terjual,
+        harga_satuan: stok.harga,
         stok_sebelum: stok.jumlah,
         stok_sesudah: stokSesudah,
         tanggal_penjualan: new Date(),
@@ -71,5 +72,17 @@ export async function recordPenjualan(raw: unknown) {
 
   revalidatePath(`/stok/detailstok/${stok.produk_id}`);
   revalidatePath("/stok");
+  return { success: true };
+}
+
+const updateHargaSchema = z.object({
+  id: z.number().int().positive(),
+  harga: z.number().int().min(0),
+});
+
+export async function updateStokHarga(raw: unknown) {
+  const data = updateHargaSchema.parse(raw);
+  await prisma.stok.update({ where: { id: data.id }, data: { harga: data.harga } });
+  revalidatePath("/price");
   return { success: true };
 }

@@ -77,6 +77,7 @@ model Produk {
   stoks            Stok[]
   tagihans         Tagihan[]
   historyPenjualan HistoryPenjualan[]
+  hargaImages      HargaImage[]
 }
 
 model Kategori {
@@ -94,6 +95,7 @@ model Stok {
   kategori_id      Int
   nama_tipe        String
   jumlah           Int                @default(0)
+  harga            Int                @default(0)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   produk           Produk             @relation(fields: [produk_id], references: [id], onDelete: Cascade)
@@ -135,6 +137,7 @@ model HistoryPenjualan {
   kategori_id       Int
   nama_tipe         String
   jumlah_terjual    Int
+  harga_satuan      Int      @default(0)
   stok_sebelum      Int
   stok_sesudah      Int
   tanggal_penjualan DateTime
@@ -143,6 +146,14 @@ model HistoryPenjualan {
   stok              Stok     @relation(fields: [stok_id], references: [id])
   produk            Produk   @relation(fields: [produk_id], references: [id])
   kategori          Kategori @relation(fields: [kategori_id], references: [id])
+}
+
+model HargaImage {
+  id        Int      @id @default(autoincrement())
+  produk_id Int
+  image     String
+  createdAt DateTime @default(now())
+  produk    Produk   @relation(fields: [produk_id], references: [id], onDelete: Cascade)
 }
 
 model Task {

@@ -176,7 +176,12 @@ export default async function DashboardPage() {
                   </div>
                   <div style={{ textAlign: "right", flexShrink: 0 }}>
                     <span className="badge badge-red" style={{ fontSize: "0.75rem" }}>-{h.jumlah_terjual}</span>
-                    <p style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 3 }}>{formatDate(h.tanggal_penjualan)}</p>
+                    {h.harga_satuan > 0 && (
+                      <p style={{ fontSize: "0.72rem", color: "#4ade80", fontWeight: 600, marginTop: 2 }}>
+                        +{formatRupiah(h.harga_satuan * h.jumlah_terjual)}
+                      </p>
+                    )}
+                    <p style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 2 }}>{formatDate(h.tanggal_penjualan)}</p>
                   </div>
                 </div>
               </div>

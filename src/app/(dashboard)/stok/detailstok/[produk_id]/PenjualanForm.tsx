@@ -84,7 +84,15 @@ export function PenjualanForm({ stoks }: Props) {
           </button>
         </div>
         {selectedStok && (
-          <p style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Stok tersedia: {selectedStok.jumlah}</p>
+          <div style={{ display: "flex", gap: "1rem", fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+            <span>Stok tersedia: {selectedStok.jumlah}</span>
+            {selectedStok.harga > 0 && (
+              <span style={{ color: "#4ade80", fontWeight: 600 }}>
+                Harga: {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(selectedStok.harga)}
+                {jumlah > 1 && ` × ${jumlah} = ${new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(selectedStok.harga * jumlah)}`}
+              </span>
+            )}
+          </div>
         )}
       </div>
       <button
