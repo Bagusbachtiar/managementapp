@@ -169,12 +169,7 @@ function ProdukModal({ title, salesName, produkName, variants, kategoris, isPend
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="form-label" style={{ margin: 0 }}>Variasi Produk</label>
-                <button type="button" onClick={addVariant} className="btn btn-secondary btn-sm">
-                  <Plus size={14} /> Tambah Variasi
-                </button>
-              </div>
+              <label className="form-label" style={{ marginBottom: "0.5rem", display: "block" }}>Variasi Produk</label>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                 {variants.map((v, i) => (
                   <div key={i} className="variant-row">
@@ -191,10 +186,16 @@ function ProdukModal({ title, salesName, produkName, variants, kategoris, isPend
                         </select>
                       </div>
                     </div>
-                    <button type="button" onClick={() => removeVariant(i)} disabled={variants.length === 1}
-                      className="icon-btn icon-btn-red" style={{ marginBottom: 0, alignSelf: "flex-end", borderRadius: "50%", width: "2.2rem", height: "2.2rem" }}>
-                      <Minus size={14} />
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignSelf: "flex-end" }}>
+                      <button type="button" onClick={addVariant}
+                        className="icon-btn icon-btn-green" style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
+                        <Plus size={14} />
+                      </button>
+                      <button type="button" onClick={() => removeVariant(i)} disabled={variants.length === 1}
+                        className="icon-btn icon-btn-red" style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
+                        <Minus size={14} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
