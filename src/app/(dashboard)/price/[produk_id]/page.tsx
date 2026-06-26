@@ -34,6 +34,21 @@ export default async function HargaImagePage({ params }: { params: Promise<{ pro
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        {/* Photo gallery */}
+        <div className="card overflow-hidden">
+          <div className="card-header">
+            <span className="card-title">Foto Harga</span>
+            <span className="badge badge-indigo">{produk.hargaImages.length}/3</span>
+          </div>
+          <div style={{ padding: "1rem" }}>
+            <HargaImageUploader
+              produkId={produk.id}
+              produkNama={produk.nama}
+              images={produk.hargaImages}
+            />
+          </div>
+        </div>
+
         {/* Price table */}
         <div className="card overflow-hidden">
           <div className="card-header">
@@ -71,21 +86,6 @@ export default async function HargaImagePage({ params }: { params: Promise<{ pro
               </table>
             </div>
           )}
-        </div>
-
-        {/* Photo gallery */}
-        <div className="card overflow-hidden">
-          <div className="card-header">
-            <span className="card-title">Foto Harga</span>
-            <span className="badge badge-indigo">{produk.hargaImages.length}/3</span>
-          </div>
-          <div style={{ padding: "1rem" }}>
-            <HargaImageUploader
-              produkId={produk.id}
-              produkNama={produk.nama}
-              images={produk.hargaImages}
-            />
-          </div>
         </div>
       </div>
     </div>

@@ -29,8 +29,8 @@ export function TambahInventoriModal({
     setVariants([{ nama_tipe: "", kategori_id: kategoris[0]?.id ?? 0, jumlah: 0 }]);
   }
 
-  function addVariant() {
-    setVariants((p) => [...p, { nama_tipe: "", kategori_id: kategoris[0]?.id ?? 0, jumlah: 0 }]);
+  function addVariant(kategori_id?: number) {
+    setVariants((p) => [...p, { nama_tipe: "", kategori_id: kategori_id ?? kategoris[0]?.id ?? 0, jumlah: 0 }]);
   }
 
   function removeVariant(i: number) {
@@ -164,7 +164,7 @@ export function TambahInventoriModal({
                             </div>
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignSelf: "flex-end" }}>
-                            <button type="button" onClick={addVariant}
+                            <button type="button" onClick={() => addVariant(v.kategori_id)}
                               className="icon-btn icon-btn-green" style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
                               <Plus size={14} />
                             </button>

@@ -144,7 +144,7 @@ interface ModalProps {
 }
 
 function ProdukModal({ title, salesName, produkName, variants, kategoris, isPending, onSalesName, onProdukName, onVariants, onSubmit, onClose }: ModalProps) {
-  function addVariant() { onVariants((p) => [...p, { nama_tipe: "", kategori_id: kategoris[0]?.id ?? 0, jumlah: 0 }]); }
+  function addVariant(kategori_id?: number) { onVariants((p) => [...p, { nama_tipe: "", kategori_id: kategori_id ?? kategoris[0]?.id ?? 0, jumlah: 0 }]); }
   function removeVariant(i: number) { if (variants.length === 1) return; onVariants((p) => p.filter((_, idx) => idx !== i)); }
   function updateVariant(i: number, field: keyof typeof variants[0], value: string | number) {
     onVariants((p) => p.map((v, idx) => idx === i ? { ...v, [field]: value } : v));
@@ -187,7 +187,7 @@ function ProdukModal({ title, salesName, produkName, variants, kategoris, isPend
                       </div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignSelf: "flex-end" }}>
-                      <button type="button" onClick={addVariant}
+                      <button type="button" onClick={() => addVariant(v.kategori_id)}
                         className="icon-btn icon-btn-green" style={{ width: "2.2rem", height: "2.2rem", borderRadius: "50%" }}>
                         <Plus size={14} />
                       </button>
