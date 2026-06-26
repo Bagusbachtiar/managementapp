@@ -36,6 +36,7 @@ export async function deleteStok(id: number) {
 const schema = z.object({
   stok_id: z.number().int().positive(),
   jumlah_terjual: z.number().int().min(1, "Jumlah terjual minimal 1"),
+  catatan: z.string().optional(),
 });
 
 export async function recordPenjualan(raw: unknown) {
@@ -66,12 +67,67 @@ export async function recordPenjualan(raw: unknown) {
         stok_sebelum: stok.jumlah,
         stok_sesudah: stokSesudah,
         tanggal_penjualan: new Date(),
+        catatan: data.catatan || null,
       },
     }),
   ]);
 
   revalidatePath(`/stok/detailstok/${stok.produk_id}`);
   revalidatePath("/stok");
+  return { success: true };
+}
+
+const bulkSchema = z.object({
+  items: z.array(z.object({
+    stok_id: z.number().int().positive(),
+    jumlah_terjual: z.number().int().min(1),
+  })).min(1),
+  catatan: z.string().optional(),
+});
+
+export async function recordPenjualanBulk(raw: unknown) {
+  const data = bulkSchema.parse(raw);
+  const now = new Date();
+
+  const stoks = await prisma.stok.findMany({
+    where: { id: { in: data.items.map((i) => i.stok_id) } },
+    include: { kategori: true },
+  });
+
+  const stokMap = new Map(stoks.map((s) => [s.id, s]));
+
+  for (const item of data.items) {
+    const stok = stokMap.get(item.stok_id);
+    if (!stok) throw new Error(`Stok tidak ditemukan`);
+    if (stok.jumlah < item.jumlah_terjual) throw new Error(`Stok ${stok.nama_tipe} tidak mencukupi (tersedia: ${stok.jumlah})`);
+  }
+
+  const ops: any[] = [];
+  for (const item of data.items) {
+    const stok = stokMap.get(item.stok_id)!;
+    const stokSesudah = stok.jumlah - item.jumlah_terjual;
+    ops.push(
+      prisma.stok.update({ where: { id: stok.id }, data: { jumlah: stokSesudah } }),
+      prisma.historyPenjualan.create({
+        data: {
+          stok_id: stok.id,
+          produk_id: stok.produk_id,
+          kategori_id: stok.kategori_id,
+          nama_tipe: stok.nama_tipe,
+          jumlah_terjual: item.jumlah_terjual,
+          harga_satuan: stok.harga,
+          stok_sebelum: stok.jumlah,
+          stok_sesudah: stokSesudah,
+          tanggal_penjualan: now,
+          catatan: data.catatan || null,
+        },
+      })
+    );
+  }
+
+  await prisma.$transaction(ops);
+  revalidatePath("/stok");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 

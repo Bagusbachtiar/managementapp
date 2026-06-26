@@ -32,7 +32,7 @@ export default async function DashboardPage() {
       include: { tagihan: { include: { produk: true, sales: true } } },
     }),
     prisma.historyPenjualan.findMany({
-      take: 5,
+      take: 20,
       orderBy: { tanggal_penjualan: "desc" },
       include: { produk: true },
     }),
@@ -155,39 +155,69 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Penjualan */}
-        <div className="card overflow-hidden">
-          <div className="card-header">
-            <span className="card-title">Penjualan Terbaru</span>
-            <DashboardPenjualanModal produks={allProduks} />
-          </div>
-          <div>
-            {recentPenjualan.length === 0 && <div className="empty-state" style={{ padding: "2rem" }}>Belum ada penjualan</div>}
-            {recentPenjualan.map((h, i) => (
-              <div key={h.id} style={{
-                padding: "0.85rem 1.25rem",
-                borderBottom: i < recentPenjualan.length - 1 ? "1px solid var(--border)" : "none",
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
-                  <div style={{ minWidth: 0 }}>
-                    <p style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {h.produk.nama}
-                    </p>
-                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 2 }}>{h.nama_tipe}</p>
-                  </div>
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <span className="badge badge-red" style={{ fontSize: "0.75rem" }}>-{h.jumlah_terjual}</span>
-                    {h.harga_satuan > 0 && (
-                      <p style={{ fontSize: "0.72rem", color: "#4ade80", fontWeight: 600, marginTop: 2 }}>
-                        +{formatRupiah(h.harga_satuan * h.jumlah_terjual)}
-                      </p>
-                    )}
-                    <p style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 2 }}>{formatDate(h.tanggal_penjualan)}</p>
-                  </div>
-                </div>
+        {(() => {
+          // Group by exact tanggal_penjualan timestamp (bulk records share same now)
+          const groupMap = new Map<string, typeof recentPenjualan>();
+          for (const h of recentPenjualan) {
+            const key = h.tanggal_penjualan.toISOString();
+            if (!groupMap.has(key)) groupMap.set(key, []);
+            groupMap.get(key)!.push(h);
+          }
+          const groups = Array.from(groupMap.values()).slice(0, 5);
+          return (
+            <div className="card overflow-hidden">
+              <div className="card-header">
+                <span className="card-title">Penjualan Terbaru</span>
+                <DashboardPenjualanModal produks={allProduks} />
               </div>
-            ))}
-          </div>
-        </div>
+              <div>
+                {groups.length === 0 && <div className="empty-state" style={{ padding: "2rem" }}>Belum ada penjualan</div>}
+                {groups.map((items, gi) => {
+                  const groupTotal = items.reduce((s, h) => s + h.harga_satuan * h.jumlah_terjual, 0);
+                  return (
+                    <div key={items[0].id} style={{
+                      padding: "0.85rem 1.25rem",
+                      borderBottom: gi < groups.length - 1 ? "1px solid var(--border)" : "none",
+                    }}>
+                      {/* Catatan + date header */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                        <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text)", fontStyle: items[0].catatan ? "normal" : "italic" }}>
+                          {items[0].catatan || "Tanpa catatan"}
+                        </span>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", flexShrink: 0 }}>{formatDate(items[0].tanggal_penjualan)}</span>
+                      </div>
+                      {/* Items */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                        {items.map((h) => (
+                          <div key={h.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+                            <div style={{ minWidth: 0 }}>
+                              <span style={{ fontSize: "0.8rem", color: "var(--text)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "block" }}>
+                                {h.produk.nama} · {h.nama_tipe}
+                              </span>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexShrink: 0 }}>
+                              <span className="badge badge-red" style={{ fontSize: "0.7rem" }}>-{h.jumlah_terjual}</span>
+                              {h.harga_satuan > 0 && (
+                                <span style={{ fontSize: "0.72rem", color: "#4ade80", fontWeight: 600 }}>+{formatRupiah(h.harga_satuan * h.jumlah_terjual)}</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Group total */}
+                      {groupTotal > 0 && (
+                        <div style={{ marginTop: "0.5rem", paddingTop: "0.4rem", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "flex-end" }}>
+                          <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#4ade80" }}>Total: +{formatRupiah(groupTotal)}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
 
         {/* Stok Summary */}
         <div className="card overflow-hidden">

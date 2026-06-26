@@ -141,6 +141,7 @@ model HistoryPenjualan {
   stok_sebelum      Int
   stok_sesudah      Int
   tanggal_penjualan DateTime
+  catatan           String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   stok              Stok     @relation(fields: [stok_id], references: [id])
