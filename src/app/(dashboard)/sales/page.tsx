@@ -38,11 +38,11 @@ export default async function SalesPage() {
                 <tr key={s.id}>
                   <td style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{i + 1}</td>
                   <td style={{ fontWeight: 600 }}>{s.sales}</td>
-                  <td>{s.tagihans.length} pesanan</td>
+                  <td>{unpaid.length} pesanan</td>
                   <td>
                     {unpaid.length === 0
                       ? <span className="badge badge-green">Lunas semua</span>
-                      : <span className="badge badge-red">{unpaid.length} · {formatRupiah(sisaTotal)}</span>
+                      : <span className="badge badge-red">{formatRupiah(sisaTotal)}</span>
                     }
                   </td>
                   <td style={{ textAlign: "center" }}>
@@ -73,10 +73,10 @@ export default async function SalesPage() {
                 <Link href={`/sales/tagihan/${s.id}`} className="btn btn-primary btn-sm">Detail</Link>
               </div>
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                <span className="badge badge-indigo" style={{ fontSize: "0.72rem" }}>{s.tagihans.length} pesanan</span>
+                <span className="badge badge-indigo" style={{ fontSize: "0.72rem" }}>{unpaid.length} belum lunas</span>
                 {unpaid.length === 0
                   ? <span className="badge badge-green" style={{ fontSize: "0.72rem" }}>Lunas semua</span>
-                  : <span className="badge badge-red" style={{ fontSize: "0.72rem" }}>{unpaid.length} belum lunas · {formatRupiah(sisaTotal)}</span>
+                  : <span className="badge badge-red" style={{ fontSize: "0.72rem" }}>{formatRupiah(sisaTotal)}</span>
                 }
               </div>
             </div>
