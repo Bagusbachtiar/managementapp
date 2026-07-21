@@ -28,11 +28,13 @@ export function ProdukClient({ sales, kategoris }: Props) {
   const [editSalesName, setEditSalesName] = useState("");
   const [editProdukName, setEditProdukName] = useState("");
   const [editVariants, setEditVariants] = useState<Variant[]>([]);
+  const [editExistingStoks, setEditExistingStoks] = useState<{ nama_tipe: string; kategori_id: number }[]>([]);
 
   function openEdit(s: SalesWithProduks, p: Produk & { stoks: (Stok & { kategori: Kategori })[] }) {
     setEditSalesName(s.sales);
     setEditProdukName(p.nama);
     setEditVariants(p.stoks.map((stok) => ({ id: stok.id, nama_tipe: stok.nama_tipe, kategori_id: stok.kategori_id, jumlah: stok.jumlah })));
+    setEditExistingStoks(p.stoks.map((stok) => ({ nama_tipe: stok.nama_tipe, kategori_id: stok.kategori_id })));
     setEditTarget({ produkId: p.id });
   }
 
@@ -127,7 +129,7 @@ export function ProdukClient({ sales, kategoris }: Props) {
       )}
       {editTarget && (
         <ProdukModal title="Edit Produk" salesName={editSalesName} produkName={editProdukName} variants={editVariants}
-          kategoris={kategoris} isPending={isPending}
+          kategoris={kategoris} isPending={isPending} existingStoks={editExistingStoks}
           onSalesName={setEditSalesName} onProdukName={setEditProdukName} onVariants={setEditVariants}
           onSubmit={handleUpdate} onClose={() => setEditTarget(null)} />
       )}
@@ -138,12 +140,13 @@ export function ProdukClient({ sales, kategoris }: Props) {
 interface ModalProps {
   title: string; salesName: string; produkName: string; variants: Variant[];
   kategoris: Kategori[]; isPending: boolean;
+  existingStoks?: { nama_tipe: string; kategori_id: number }[];
   onSalesName: (v: string) => void; onProdukName: (v: string) => void;
   onVariants: (v: Variant[] | ((p: Variant[]) => Variant[])) => void;
   onSubmit: (e: React.FormEvent) => void; onClose: () => void;
 }
 
-function ProdukModal({ title, salesName, produkName, variants, kategoris, isPending, onSalesName, onProdukName, onVariants, onSubmit, onClose }: ModalProps) {
+function ProdukModal({ title, salesName, produkName, variants, kategoris, isPending, existingStoks, onSalesName, onProdukName, onVariants, onSubmit, onClose }: ModalProps) {
   function addVariant(kategori_id?: number) { onVariants((p) => [...p, { nama_tipe: "", kategori_id: kategori_id ?? kategoris[0]?.id ?? 0, jumlah: 0 }]); }
   function removeVariant(i: number) { if (variants.length === 1) return; onVariants((p) => p.filter((_, idx) => idx !== i)); }
   function updateVariant(i: number, field: keyof typeof variants[0], value: string | number) {
@@ -175,8 +178,23 @@ function ProdukModal({ title, salesName, produkName, variants, kategoris, isPend
                   <div key={i} className="variant-row">
                     <div style={{ flex: 1 }}>
                       <label className="form-label">Nama Tipe</label>
-                      <input value={v.nama_tipe} onChange={(e) => updateVariant(i, "nama_tipe", e.target.value)}
+                      <input
+                        list={existingStoks ? `produk-tipe-list-${i}` : undefined}
+                        value={v.nama_tipe}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const match = existingStoks?.find(s => s.nama_tipe === val);
+                          onVariants(p => p.map((vv, idx) => idx === i
+                            ? { ...vv, nama_tipe: val, ...(match ? { kategori_id: match.kategori_id } : {}) }
+                            : vv
+                          ));
+                        }}
                         required className="form-input" placeholder="Tipe varian..." />
+                      {existingStoks && (
+                        <datalist id={`produk-tipe-list-${i}`}>
+                          {existingStoks.map(s => <option key={s.nama_tipe} value={s.nama_tipe} />)}
+                        </datalist>
+                      )}
                     </div>
                     <div style={{ flex: 1 }}>
                       <label className="form-label">Kategori</label>

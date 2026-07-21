@@ -37,7 +37,7 @@ export default async function DashboardPage() {
       include: { produk: true },
     }),
     prisma.tagihan.findMany({
-      take: 5,
+      take: 20,
       orderBy: { createdAt: "desc" },
       include: { produk: true, sales: true },
     }),
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
             <span className="card-title">Pesanan Terbaru</span>
             <DashboardPesanModal allSales={allSales} />
           </div>
-          <div>
+          <div style={{ maxHeight: "22rem", overflowY: "auto" }}>
             {recentPesanan.length === 0 && <div className="empty-state" style={{ padding: "2rem" }}>Belum ada pesanan</div>}
             {recentPesanan.map((t, i) => (
               <div key={t.id} style={{
@@ -229,7 +229,7 @@ export default async function DashboardPage() {
               id: p.id,
               nama: p.nama,
               namaTipes: [...new Set(p.stoks.map(s => s.nama_tipe))].sort(),
-              stoks: p.stoks.map(s => ({ nama_tipe: s.nama_tipe, jumlah: s.jumlah })),
+              stoks: p.stoks.map(s => ({ nama_tipe: s.nama_tipe, jumlah: s.jumlah, kategori_id: s.kategori_id })),
             }))}
           />
         </div>
