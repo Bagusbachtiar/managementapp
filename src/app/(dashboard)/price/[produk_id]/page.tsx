@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { HargaImageUploader } from "./HargaImageUploader";
-import { PriceRow } from "../PriceRow";
+import { PriceGroupManager } from "./PriceGroupManager";
 
 export default async function HargaImagePage({ params }: { params: Promise<{ produk_id: string }> }) {
   const { produk_id } = await params;
@@ -49,7 +49,7 @@ export default async function HargaImagePage({ params }: { params: Promise<{ pro
           </div>
         </div>
 
-        {/* Price table */}
+        {/* Price table with grouping */}
         <div className="card overflow-hidden">
           <div className="card-header">
             <span className="card-title">Harga per Tipe</span>
@@ -57,33 +57,8 @@ export default async function HargaImagePage({ params }: { params: Promise<{ pro
           {produk.stoks.length === 0 ? (
             <div className="empty-state" style={{ padding: "1.5rem" }}>Belum ada varian</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="data-table" style={{ tableLayout: "fixed", width: "100%" }}>
-                <colgroup>
-                  <col style={{ width: "30%" }} />
-                  <col style={{ width: "80px" }} />
-                  <col />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>Tipe</th>
-                    <th>Stok</th>
-                    <th>Harga Net</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {produk.stoks.map((s) => (
-                    <PriceRow
-                      key={s.id}
-                      stokId={s.id}
-                      namaTipe={s.nama_tipe}
-                      kategori={s.kategori.kategori}
-                      jumlah={s.jumlah}
-                      harga={s.harga}
-                    />
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ padding: "1rem" }}>
+              <PriceGroupManager produkId={produk.id} stoks={produk.stoks} />
             </div>
           )}
         </div>

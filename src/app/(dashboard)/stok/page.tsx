@@ -27,7 +27,7 @@ export default async function StokPage() {
             id: p.id,
             nama: p.nama,
             namaTipes: [...new Set(p.stoks.map(s => s.nama_tipe))].sort(),
-            stoks: p.stoks.map(s => ({ nama_tipe: s.nama_tipe, jumlah: s.jumlah })),
+            stoks: p.stoks.map(s => ({ nama_tipe: s.nama_tipe, jumlah: s.jumlah, kategori_id: s.kategori_id })),
           }))}
         />
       </div>

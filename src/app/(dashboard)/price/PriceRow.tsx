@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { GripVertical } from "lucide-react";
 import { updateStokHarga } from "@/actions/stok";
 import { formatRupiah } from "@/lib/utils";
 
@@ -11,6 +12,9 @@ interface Props {
   kategori: string;
   jumlah: number;
   harga: number;
+  draggable?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }
 
 function formatInput(val: number): string {
@@ -18,7 +22,7 @@ function formatInput(val: number): string {
   return new Intl.NumberFormat("id-ID").format(val);
 }
 
-export function PriceRow({ stokId, namaTipe, kategori, jumlah, harga: initialHarga }: Props) {
+export function PriceRow({ stokId, namaTipe, kategori, jumlah, harga: initialHarga, draggable, onDragStart, onDragEnd }: Props) {
   const [editing, setEditing] = useState(false);
   const [harga, setHarga] = useState(initialHarga);
   const [input, setInput] = useState(formatInput(initialHarga));
@@ -51,7 +55,13 @@ export function PriceRow({ stokId, namaTipe, kategori, jumlah, harga: initialHar
   }
 
   return (
-    <tr>
+    <tr draggable={draggable} onDragStart={onDragStart} onDragEnd={onDragEnd}
+      style={{ cursor: draggable ? "grab" : undefined, opacity: 1 }}>
+      {draggable && (
+        <td style={{ verticalAlign: "middle", width: "2rem", color: "var(--text-muted)", paddingLeft: "0.5rem" }}>
+          <GripVertical size={15} />
+        </td>
+      )}
       <td style={{ verticalAlign: "middle" }}>
         <div style={{ fontWeight: 600, fontSize: "0.875rem" }}>{namaTipe}</div>
         <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{kategori}</div>

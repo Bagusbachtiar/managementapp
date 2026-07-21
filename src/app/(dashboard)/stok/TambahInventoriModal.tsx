@@ -7,7 +7,7 @@ import { createInventoriProduk, addVariantsToInventori } from "@/actions/produk"
 import type { Kategori } from "@prisma/client";
 
 interface Variant { nama_tipe: string; kategori_id: number; jumlah: number; }
-interface StokInfo { nama_tipe: string; jumlah: number; }
+interface StokInfo { nama_tipe: string; jumlah: number; kategori_id: number; }
 interface ProdukOption { id: number; nama: string; namaTipes: string[]; stoks: StokInfo[]; }
 
 export function TambahInventoriModal({
@@ -125,7 +125,7 @@ export function TambahInventoriModal({
                                     const val = e.target.value;
                                     const match = activeProduk?.stoks.find(s => s.nama_tipe === val);
                                     setVariants(p => p.map((vv, idx) => idx === i
-                                      ? { ...vv, nama_tipe: val, jumlah: match ? match.jumlah : 0 }
+                                      ? { ...vv, nama_tipe: val, jumlah: match ? match.jumlah : 0, kategori_id: match ? match.kategori_id : vv.kategori_id }
                                       : vv
                                     ));
                                   }}
