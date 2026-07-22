@@ -6,7 +6,7 @@ export default async function SalesPage() {
   const sales = await prisma.sales.findMany({
     where: { sales: { not: "Inventori" } },
     orderBy: { createdAt: "desc" },
-    include: { tagihans: true },
+    include: { tagihans: true, produks: true },
   });
 
   return (
@@ -37,7 +37,16 @@ export default async function SalesPage() {
               return (
                 <tr key={s.id}>
                   <td style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>{i + 1}</td>
-                  <td style={{ fontWeight: 600 }}>{s.sales}</td>
+                  <td>
+                    <div style={{ fontWeight: 600, marginBottom: s.produks.length ? "0.35rem" : 0 }}>{s.sales}</div>
+                    {s.produks.length > 0 && (
+                      <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
+                        {s.produks.map(p => (
+                          <span key={p.id} className="badge badge-indigo" style={{ fontSize: "0.68rem" }}>{p.nama}</span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
                   <td>{unpaid.length} pesanan</td>
                   <td>
                     {unpaid.length === 0
@@ -72,6 +81,13 @@ export default async function SalesPage() {
                 </div>
                 <Link href={`/sales/tagihan/${s.id}`} className="btn btn-primary btn-sm">Detail</Link>
               </div>
+              {s.produks.length > 0 && (
+                <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
+                  {s.produks.map(p => (
+                    <span key={p.id} className="badge badge-indigo" style={{ fontSize: "0.68rem" }}>{p.nama}</span>
+                  ))}
+                </div>
+              )}
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 <span className="badge badge-indigo" style={{ fontSize: "0.72rem" }}>{unpaid.length} belum lunas</span>
                 {unpaid.length === 0
